@@ -1,20 +1,3 @@
-/*
-
-        Copyright 2010 Etay Meiri
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
 
 #ifndef MATH_3D_H
 #define MATH_3D_H
@@ -43,10 +26,10 @@
 
 // powf wrapper for integer params to avoid crazy casting
 #define powi(base,exp) (int)powf((float)(base), (float)(exp))
-#define PI       3.14159265358979323846   // pi
+#define M_PI       3.14159265358979323846   // pi
 
-#define ToRadian(x) (float)(((x) * PI / 180.0f))
-#define ToDegree(x) (float)(((x) * 180.0f / PI))
+#define ToRadian(x) (float)(((x) * M_PI / 180.0f))
+#define ToDegree(x) (float)(((x) * 180.0f / M_PI))
 
 static inline float RandomFloat()
 {
@@ -249,7 +232,7 @@ struct Vector3f
         return !(*this == r);
     }
 
-    operator const float*() const
+    operator const float* () const
     {
         return &(x);
     }
@@ -414,8 +397,8 @@ struct Vector4f
 inline Vector3f operator+(const Vector3f& l, const Vector3f& r)
 {
     Vector3f Ret(l.x + r.x,
-                 l.y + r.y,
-                 l.z + r.z);
+        l.y + r.y,
+        l.z + r.z);
 
     return Ret;
 }
@@ -423,8 +406,8 @@ inline Vector3f operator+(const Vector3f& l, const Vector3f& r)
 inline Vector3f operator-(const Vector3f& l, const Vector3f& r)
 {
     Vector3f Ret(l.x - r.x,
-                 l.y - r.y,
-                 l.z - r.z);
+        l.y - r.y,
+        l.z - r.z);
 
     return Ret;
 }
@@ -432,8 +415,8 @@ inline Vector3f operator-(const Vector3f& l, const Vector3f& r)
 inline Vector3f operator*(const Vector3f& l, float f)
 {
     Vector3f Ret(l.x * f,
-                 l.y * f,
-                 l.z * f);
+        l.y * f,
+        l.z * f);
 
     return Ret;
 }
@@ -442,8 +425,8 @@ inline Vector3f operator*(const Vector3f& l, float f)
 inline Vector3f operator/(const Vector3f& l, float f)
 {
     Vector3f Ret(l.x / f,
-                 l.y / f,
-                 l.z / f);
+        l.y / f,
+        l.z / f);
 
     return Ret;
 }
@@ -460,9 +443,9 @@ inline Vector3f::Vector3f(const Vector4f& v)
 inline Vector4f operator+(const Vector4f& l, const Vector4f& r)
 {
     Vector4f Ret(l.x + r.x,
-                 l.y + r.y,
-                 l.z + r.z,
-                 l.w + r.w);
+        l.y + r.y,
+        l.z + r.z,
+        l.w + r.w);
 
     return Ret;
 }
@@ -471,9 +454,9 @@ inline Vector4f operator+(const Vector4f& l, const Vector4f& r)
 inline Vector4f operator-(const Vector4f& l, const Vector4f& r)
 {
     Vector4f Ret(l.x - r.x,
-                 l.y - r.y,
-                 l.z - r.z,
-                 l.w - r.w);
+        l.y - r.y,
+        l.z - r.z,
+        l.w - r.w);
 
     return Ret;
 }
@@ -482,9 +465,9 @@ inline Vector4f operator-(const Vector4f& l, const Vector4f& r)
 inline Vector4f operator/(const Vector4f& l, float f)
 {
     Vector4f Ret(l.x / f,
-                 l.y / f,
-                 l.z / f,
-                 l.w / f);
+        l.y / f,
+        l.z / f,
+        l.w / f);
 
     return Ret;
 }
@@ -493,9 +476,9 @@ inline Vector4f operator/(const Vector4f& l, float f)
 inline Vector4f operator*(const Vector4f& l, float f)
 {
     Vector4f Ret(l.x * f,
-                 l.y * f,
-                 l.z * f,
-                 l.w * f);
+        l.y * f,
+        l.z * f,
+        l.w * f);
 
     return Ret;
 }
@@ -504,9 +487,9 @@ inline Vector4f operator*(const Vector4f& l, float f)
 inline Vector4f operator*(float f, const Vector4f& l)
 {
     Vector4f Ret(l.x * f,
-                 l.y * f,
-                 l.z * f,
-                 l.w * f);
+        l.y * f,
+        l.z * f,
+        l.w * f);
 
     return Ret;
 }
@@ -532,7 +515,7 @@ struct OrthoProjInfo
     float f;        // z far
 
     float Width;
-    float Height;    
+    float Height;
 
     void Print()
     {
@@ -572,12 +555,12 @@ class Matrix4f
 public:
     float m[4][4] = { 0.0f };
 
-    Matrix4f()  {}
+    Matrix4f() {}
 
     Matrix4f(float a00, float a01, float a02, float a03,
-             float a10, float a11, float a12, float a13,
-             float a20, float a21, float a22, float a23,
-             float a30, float a31, float a32, float a33)
+        float a10, float a11, float a12, float a13,
+        float a20, float a21, float a22, float a23,
+        float a30, float a31, float a32, float a33)
     {
         m[0][0] = a00; m[0][1] = a01; m[0][2] = a02; m[0][3] = a03;
         m[1][0] = a10; m[1][1] = a11; m[1][2] = a12; m[1][3] = a13;
@@ -599,7 +582,7 @@ public:
         m[0][0] = AssimpMatrix.a1; m[0][1] = AssimpMatrix.a2; m[0][2] = AssimpMatrix.a3; m[0][3] = 0.0f;
         m[1][0] = AssimpMatrix.b1; m[1][1] = AssimpMatrix.b2; m[1][2] = AssimpMatrix.b3; m[1][3] = 0.0f;
         m[2][0] = AssimpMatrix.c1; m[2][1] = AssimpMatrix.c2; m[2][2] = AssimpMatrix.c3; m[2][3] = 0.0f;
-        m[3][0] = 0.0f           ; m[3][1] = 0.0f           ; m[3][2] = 0.0f           ; m[3][3] = 1.0f;
+        m[3][0] = 0.0f; m[3][1] = 0.0f; m[3][2] = 0.0f; m[3][3] = 1.0f;
     }
 
 
@@ -620,8 +603,8 @@ public:
     {
         Matrix4f n;
 
-        for (unsigned int i = 0 ; i < 4 ; i++) {
-            for (unsigned int j = 0 ; j < 4 ; j++) {
+        for (unsigned int i = 0; i < 4; i++) {
+            for (unsigned int j = 0; j < 4; j++) {
                 n.m[i][j] = m[j][i];
             }
         }
@@ -642,12 +625,12 @@ public:
     {
         Matrix4f Ret;
 
-        for (unsigned int i = 0 ; i < 4 ; i++) {
-            for (unsigned int j = 0 ; j < 4 ; j++) {
+        for (unsigned int i = 0; i < 4; i++) {
+            for (unsigned int j = 0; j < 4; j++) {
                 Ret.m[i][j] = m[i][0] * Right.m[0][j] +
-                              m[i][1] * Right.m[1][j] +
-                              m[i][2] * Right.m[2][j] +
-                              m[i][3] * Right.m[3][j];
+                    m[i][1] * Right.m[1][j] +
+                    m[i][2] * Right.m[2][j] +
+                    m[i][3] * Right.m[3][j];
             }
         }
 
@@ -658,15 +641,15 @@ public:
     {
         Vector4f r;
 
-        r.x = m[0][0]* v.x + m[0][1]* v.y + m[0][2]* v.z + m[0][3]* v.w;
-        r.y = m[1][0]* v.x + m[1][1]* v.y + m[1][2]* v.z + m[1][3]* v.w;
-        r.z = m[2][0]* v.x + m[2][1]* v.y + m[2][2]* v.z + m[2][3]* v.w;
-        r.w = m[3][0]* v.x + m[3][1]* v.y + m[3][2]* v.z + m[3][3]* v.w;
+        r.x = m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3] * v.w;
+        r.y = m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z + m[1][3] * v.w;
+        r.z = m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z + m[2][3] * v.w;
+        r.w = m[3][0] * v.x + m[3][1] * v.y + m[3][2] * v.z + m[3][3] * v.w;
 
         return r;
     }
 
-    operator const float*() const
+    operator const float* () const
     {
         return &(m[0][0]);
     }
@@ -680,7 +663,7 @@ public:
 
     void Print() const
     {
-        for (int i = 0 ; i < 4 ; i++) {
+        for (int i = 0; i < 4; i++) {
             printf("%f %f %f %f\n", m[i][0], m[i][1], m[i][2], m[i][3]);
         }
     }
@@ -725,7 +708,7 @@ class Matrix3f
 public:
     float m[3][3] = { 0.0f };
 
-    Matrix3f()  {}
+    Matrix3f() {}
 
     // Initialize the matrix from the top left corner of the 4-by-4 matrix
     Matrix3f(const Matrix4f& a)
@@ -750,11 +733,11 @@ public:
     {
         Matrix3f Ret;
 
-        for (unsigned int i = 0 ; i < 3 ; i++) {
-            for (unsigned int j = 0 ; j < 3 ; j++) {
+        for (unsigned int i = 0; i < 3; i++) {
+            for (unsigned int j = 0; j < 3; j++) {
                 Ret.m[i][j] = m[i][0] * Right.m[0][j] +
-                              m[i][1] * Right.m[1][j] +
-                              m[i][2] * Right.m[2][j];
+                    m[i][1] * Right.m[1][j] +
+                    m[i][2] * Right.m[2][j];
             }
         }
 
@@ -765,8 +748,8 @@ public:
     {
         Matrix3f n;
 
-        for (unsigned int i = 0 ; i < 3 ; i++) {
-            for (unsigned int j = 0 ; j < 3 ; j++) {
+        for (unsigned int i = 0; i < 3; i++) {
+            for (unsigned int j = 0; j < 3; j++) {
                 n.m[i][j] = m[j][i];
             }
         }
@@ -778,7 +761,7 @@ public:
 
     void Print() const
     {
-        for (int i = 0 ; i < 3 ; i++) {
+        for (int i = 0; i < 3; i++) {
             printf("%f %f %f\n", m[i][0], m[i][1], m[i][2]);
         }
     }
@@ -857,33 +840,33 @@ public:
         float NearX = NearZ * tanHalfFOV;
         float NearY = NearZ * tanHalfFOV * AR;
 
-        NearTopLeft     = Vector4f(-NearX, NearY, NearZ, 1.0f);
-        NearBottomLeft  = Vector4f(-NearX, -NearY, NearZ, 1.0f);
-        NearTopRight    = Vector4f(NearX, NearY, NearZ, 1.0f);
+        NearTopLeft = Vector4f(-NearX, NearY, NearZ, 1.0f);
+        NearBottomLeft = Vector4f(-NearX, -NearY, NearZ, 1.0f);
+        NearTopRight = Vector4f(NearX, NearY, NearZ, 1.0f);
         NearBottomRight = Vector4f(NearX, -NearY, NearZ, 1.0f);
 
         float FarZ = persProjInfo.zFar;
         float FarX = FarZ * tanHalfFOV;
         float FarY = FarZ * tanHalfFOV * AR;
 
-        FarTopLeft     = Vector4f(-FarX, FarY, FarZ, 1.0f);
-        FarBottomLeft  = Vector4f(-FarX, -FarY, FarZ, 1.0f);
-        FarTopRight    = Vector4f(FarX, FarY, FarZ, 1.0f);
+        FarTopLeft = Vector4f(-FarX, FarY, FarZ, 1.0f);
+        FarBottomLeft = Vector4f(-FarX, -FarY, FarZ, 1.0f);
+        FarTopRight = Vector4f(FarX, FarY, FarZ, 1.0f);
         FarBottomRight = Vector4f(FarX, -FarY, FarZ, 1.0f);
     }
 
 
     void Transform(const Matrix4f& m)
     {
-         NearTopLeft     = m * NearTopLeft;
-         NearBottomLeft  = m * NearBottomLeft;
-         NearTopRight    = m * NearTopRight;
-         NearBottomRight = m * NearBottomRight;
+        NearTopLeft = m * NearTopLeft;
+        NearBottomLeft = m * NearBottomLeft;
+        NearTopRight = m * NearTopRight;
+        NearBottomRight = m * NearBottomRight;
 
-         FarTopLeft     = m * FarTopLeft;
-         FarBottomLeft  = m * FarBottomLeft;
-         FarTopRight    = m * FarTopRight;
-         FarBottomRight = m * FarBottomRight;
+        FarTopLeft = m * FarTopLeft;
+        FarBottomLeft = m * FarBottomLeft;
+        FarTopRight = m * FarTopRight;
+        FarBottomRight = m * FarBottomRight;
     }
 
 
@@ -928,11 +911,11 @@ public:
     void Update(const Matrix4f& ViewProj)
     {
         ViewProj.CalcClipPlanes(m_leftClipPlane,
-                                m_rightClipPlane,
-                                m_bottomClipPlane,
-                                m_topClipPlane,
-                                m_nearClipPlane,
-                                m_farClipPlane);
+            m_rightClipPlane,
+            m_bottomClipPlane,
+            m_topClipPlane,
+            m_nearClipPlane,
+            m_farClipPlane);
     }
 
     bool IsPointInsideViewFrustum(const Vector3f& p) const
@@ -940,12 +923,12 @@ public:
         Vector4f p4D(p, 1.0f);
 
         bool Inside =
-            (m_leftClipPlane.Dot(p4D)   >= 0) &&
-            (m_rightClipPlane.Dot(p4D)  <= 0) &&
-         //   (m_topClipPlane.Dot(p4D)    <= 0) &&
-         //   (m_bottomClipPlane.Dot(p4D) >= 0) &&
-            (m_nearClipPlane.Dot(p4D)   >= 0) &&
-            (m_farClipPlane.Dot(p4D)    <= 0);
+            (m_leftClipPlane.Dot(p4D) >= 0) &&
+            (m_rightClipPlane.Dot(p4D) <= 0) &&
+            //   (m_topClipPlane.Dot(p4D)    <= 0) &&
+            //   (m_bottomClipPlane.Dot(p4D) >= 0) &&
+            (m_nearClipPlane.Dot(p4D) >= 0) &&
+            (m_farClipPlane.Dot(p4D) <= 0);
 
         return Inside;
     }
@@ -961,10 +944,10 @@ private:
 };
 
 void CalcTightLightProjection(const Matrix4f& CameraView,        // in
-                              const Vector3f& LightDir,          // in
-                              const PersProjInfo& persProjInfo,  // in
-                              Vector3f& LightPosWorld,           // out
-                              OrthoProjInfo& orthoProjInfo);     // out
+    const Vector3f& LightDir,          // in
+    const PersProjInfo& persProjInfo,  // in
+    Vector3f& LightPosWorld,           // out
+    OrthoProjInfo& orthoProjInfo);     // out
 
 int CalcNextPowerOfTwo(int x);
 

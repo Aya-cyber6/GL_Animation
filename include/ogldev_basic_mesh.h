@@ -59,6 +59,12 @@ public:
     void GetLeadingVertex(uint DrawIndex, uint PrimID, Vector3f& Vertex);
 
     void SetPBR(bool IsPBR) { m_isPBR = IsPBR; }
+    
+    bool hasAnim = true;
+
+    std::string directory;
+
+    const aiScene* m_pScene;
 
 protected:
 
@@ -87,7 +93,6 @@ protected:
 
     std::vector<BasicMeshEntry> m_Meshes;
 
-    const aiScene* m_pScene;
 
     Matrix4f m_GlobalInverseTransform;
 

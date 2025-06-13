@@ -1,29 +1,5 @@
-/*
-
-        Copyright 2022 Etay Meiri
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-    Practical Skeletal Animation
-
-*/
-
 #include <stdio.h>
 #include <string.h>
-#include <math.h>
-#include <GL/glew.h>
-
 
 #include "ogldev_engine_common.h"
 #include "ogldev_util.h"
@@ -33,6 +9,9 @@
 #include "ogldev_mesh_common.h"
 #include "ogldev_world_transform.h"
 #include "ogldev_phong_renderer.h"
+#include "StaticModel.h"
+#include "FpsCamera.h"
+#include <iostream>
 
 #define WINDOW_WIDTH  1920
 #define WINDOW_HEIGHT 1080
@@ -41,13 +20,29 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
 static void CursorPosCallback(GLFWwindow* window, double x, double y);
 static void MouseButtonCallback(GLFWwindow* window, int Button, int Action, int Mode);
 
+StaticModel* worldModel;
+
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
 
 class Tutorial40
 {
 public:
+    CameraFPS* fpsCamera = nullptr;
+    CameraAPI* currentCamera = nullptr;
 
     Tutorial40()
     {
+        fpsCamera = new CameraFPS(
+            0.0f, 0.0f, 3.0f,    // position (x, y, z)
+            0.0f, 1.0f, 0.0f,    // up vector (x, y, z)
+            -90.0f,              // yaw
+            0.0f                 // pitch
+        );
+
+        currentCamera = fpsCamera;
+
         m_dirLight.WorldDirection = Vector3f(0.0f, -1.0f, 0.0f);
         m_dirLight.DiffuseIntensity = 1.0f;
         m_dirLight.AmbientIntensity = 0.5f;
@@ -55,6 +50,7 @@ public:
 
     virtual ~Tutorial40()
     {
+        SAFE_DELETE(fpsCamera);
         SAFE_DELETE(m_pGameCamera);
     }
 
@@ -69,6 +65,10 @@ public:
 
         InitMesh();
 
+        if (!m_pMesh->hasAnim) {
+            std::cout << "Scene contains no animations*******************************." << std::endl;
+            return;
+        }
         InitRenderer();
 
         m_startTime = GetCurrentTimeMillis();
@@ -79,10 +79,53 @@ public:
     void Run()
     {
         while (!glfwWindowShouldClose(window)) {
-            RenderSceneCB();
+            RenderStatic();
+            //RenderSceneCB();
             glfwSwapBuffers(window);
             glfwPollEvents();
         }
+    }
+
+    void RenderStatic() {
+        float currentFrame = static_cast<float>(glfwGetTime());
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        Shader ourShader("Shaders/static.vert", "Shaders/static.frag");
+        ourShader.use();
+
+        // Light direction (Vector3f)
+        Vector3f lightDir(-0.2f, -1.0f, -0.3f);
+        ourShader.setVec3("light.direction", lightDir);
+
+        ourShader.setVec3("light.ambient", Vector3f(0.2f, 0.2f, 0.2f));   // ambient light
+        ourShader.setVec3("light.diffuse", Vector3f(0.7f, 0.7f, 0.7f));   // diffuse light
+        ourShader.setVec3("light.specular", Vector3f(0.5f, 0.5f, 0.5f));  // specular highlights
+
+        // Camera position (specular calculations)
+        ourShader.setVec3("viewPos", currentCamera->GetPos());
+
+        // Projection matrix (custom Perspective)
+        float aspectRatio = (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT;
+        Matrix4f projection = currentCamera->GetProjectionMat();
+        // OR use: Matrix4f::Perspective(camera.Zoom, aspectRatio, 0.1f, 100.0f);
+
+        // View matrix
+        Matrix4f view = currentCamera->GetViewportMatrix();
+
+        ourShader.setMat4("projection", projection);
+        ourShader.setMat4("view", view);
+
+        // Model matrix: scaling 0.01x
+        Matrix4f model_world;
+        model_world.InitScaleTransform(0.01f, 0.01f, 0.01f);
+
+        ourShader.setMat4("model", model_world);
+
+        worldModel->Draw(ourShader);
     }
 
 
@@ -104,14 +147,21 @@ public:
         m_phongRenderer.RenderAnimation(m_pMesh, AnimationTimeSec, m_animationIndex);
     }
 
-
+    
 #define ATTEN_STEP 0.01f
 
 #define ANGLE_STEP 1.0f
 
     void PassiveMouseCB(int x, int y)
     {
-        m_pGameCamera->OnMouse(x, y);
+        if (currentCamera == m_pGameCamera) {
+            m_pGameCamera->OnMouse(x, y);
+
+        }
+        else {
+            fpsCamera->ProcessMouseMovement(x, y);
+
+        }
     }
 
     void KeyboardCB(uint key, int state)
@@ -119,6 +169,15 @@ public:
         if (state == GLFW_PRESS) {
 
             switch (key) {
+
+                case GLFW_KEY_C:
+                    if (currentCamera == fpsCamera)
+                        currentCamera = m_pGameCamera;
+                    else
+                        currentCamera = fpsCamera;
+                    break;
+       
+
             case GLFW_KEY_0:
                 m_animationIndex = 0;
                 break;
@@ -158,6 +217,8 @@ public:
         }
 
         m_pGameCamera->OnKeyboard(key);
+        //fpsCamera->OnKeyboard(key);
+
     }
 
 
@@ -213,15 +274,15 @@ private:
     void InitMesh()
     {
         m_pMesh = new SkinnedMesh();
+    
+        m_pMesh->LoadMesh("Content/Station/stationgarden.obj");
+        //m_pMesh->LoadMesh("Content/boblampclean.md5mesh");
+        std::cout << "*************Scene contains no animations*******************************." << std::endl;
 
-        /*if (!m_pMesh->LoadMesh("../Content/vampire/dancing_vampire.dae")) {
-             printf("Missing mesh file\n");
-             printf("You can download it from %s\n",
-                 "https://sketchfab.com/3d-models/iclone-7-raptoid-mascot-free-download-56a3e10a73924843949ae7a9800c97c7");
-         }       */
-         // m_pMesh->SetRotation(90.0f, -45.0f, 0.0f);
-
-        m_pMesh->LoadMesh("Content/boblampclean.md5mesh");
+        if (!m_pMesh->hasAnim) {
+            worldModel = new StaticModel(m_pMesh->m_pScene->mRootNode, m_pMesh->m_pScene, m_pMesh->directory);
+            return;
+        }
         m_pMesh->SetRotation(0.0f, 180.0f, 0.0f);
         m_pMesh->SetPosition(0.0f, 15.0f, 10.0f);
         m_pMesh->SetScale(0.1f);
@@ -239,6 +300,13 @@ private:
     long long m_totalPauseTime = 0;
     long long m_pauseStart = 0;
     int m_animationIndex = 0;
+
+
+    //protected:
+    //    const aiScene* m_pScene;
+    //    Assimp::Importer m_Importer;
+
+
 };
 
 Tutorial40* app = NULL;

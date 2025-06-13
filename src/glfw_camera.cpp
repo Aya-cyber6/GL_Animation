@@ -1,24 +1,5 @@
-/*
-        Copyright 2021 Etay Meiri
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
 
 #include "ogldev_basic_glfw_camera.h"
 
@@ -88,27 +69,6 @@ void BasicCamera::InitInternal()
 {
     Vector3f HTarget(m_target.x, 0.0, m_target.z);
     HTarget.Normalize();
-
-  /* The commented code is the original calculation described in 
-     the "Camera Rotation With Quaternion" video (https://youtu.be/MZuYmG1GBFk).
-     As suggested by the youtube viewer @Brmngm I replaced it with the simpler
-     code using atan2 below which does the same thing with less hassle.
-  
-    float Angle = ToDegree(asin(abs(HTarget.z)));
-
-    if (HTarget.z >= 0.0f) {
-        if (HTarget.x >= 0.0f) {
-            m_AngleH = 360.0f - Angle;
-        } else {
-            m_AngleH = 180.0f + Angle;
-        }
-    } else {
-        if (HTarget.x >= 0.0f) {
-            m_AngleH = Angle;
-        } else {
-            m_AngleH = 180.0f - Angle;
-        }
-    }*/
 
     m_AngleH = -ToDegree(atan2(m_target.z, m_target.x));
 
@@ -345,7 +305,7 @@ void BasicCamera::Update()
 
 
 
-Matrix4f BasicCamera::GetMatrix() const
+ Matrix4f BasicCamera::GetMatrix() const
 {
     Matrix4f CameraTransformation;
     CameraTransformation.InitCameraTransform(m_pos, m_target, m_up);

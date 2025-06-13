@@ -20,6 +20,7 @@
 #include "ogldev_engine_common.h"
 
 #include "3rdparty/meshoptimizer/src/meshoptimizer.h"
+#include <iostream>
 
 using namespace std;
 
@@ -69,6 +70,22 @@ bool BasicMesh::LoadMesh(const string& Filename, int AssimpFlags)
     // Release the previously loaded mesh (if it exists)
     Clear();
 
+    m_pScene = m_Importer.ReadFile(Filename.c_str(), AssimpFlags);
+
+    if (!m_pScene) {
+        printf("Error parsing '%s': '%s'\n", Filename.c_str(), m_Importer.GetErrorString());
+        return false;
+    }
+
+        directory = Filename.substr(0, Filename.find_last_of('/'));
+
+    if (m_pScene->mNumAnimations == 0) {
+        hasAnim = false;
+        std::cout << "Scene contains no animationssssssssss." << std::endl;
+        return true;
+    }
+
+
     // Create the VAO
     if (IsGLVersionHigher(4, 5)) {
         glCreateVertexArrays(1, &m_VAO);
@@ -80,18 +97,10 @@ bool BasicMesh::LoadMesh(const string& Filename, int AssimpFlags)
         glGenBuffers(ARRAY_SIZE_IN_ELEMENTS(m_Buffers), m_Buffers);
     }
 
-    bool Ret = false;
-
-    m_pScene = m_Importer.ReadFile(Filename.c_str(), AssimpFlags);
-
-    if (m_pScene) {
+        bool Ret = false;
         m_GlobalInverseTransform = m_pScene->mRootNode->mTransformation;
         m_GlobalInverseTransform = m_GlobalInverseTransform.Inverse();
         Ret = InitFromScene(m_pScene, Filename);
-    }
-    else {
-        printf("Error parsing '%s': '%s'\n", Filename.c_str(), m_Importer.GetErrorString());
-    }
 
     // Make sure the VAO is not changed from the outside
     if (!IsGLVersionHigher(4, 5)) {

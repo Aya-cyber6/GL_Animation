@@ -1,26 +1,9 @@
-/*
-
-        Copyright 2022 Etay Meiri
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
 
 #ifndef OGLDEV_BASIC_GLFW_CAMERA_H
 #define OGLDEV_BASIC_GLFW_CAMERA_H
 
 #include "ogldev_math_3d.h"
-#include "ogldev_camera_api.h"
+#include "BaseCamera.h"
 
 class BasicCamera : public CameraAPI
 {
@@ -46,7 +29,7 @@ public:
 
     void SetTarget(const Vector3f& target);
 
-    void SetUp(float x, float y, float z) { m_up.x = x; m_up.y = y; m_up.z = z;}
+    void SetUp(float x, float y, float z) { m_up.x = x; m_up.y = y; m_up.z = z; }
 
     bool OnKeyboard(int key);
 
@@ -106,8 +89,8 @@ private:
     bool m_OnLeftEdge = false;
     bool m_OnRightEdge = false;
 
-    Vector2i m_mousePos = Vector2i(0,0);
-    
+    Vector2i m_mousePos = Vector2i(0, 0);
+
     PersProjInfo m_persProjInfo;
     Matrix4f m_projection;
 };

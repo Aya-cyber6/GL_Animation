@@ -458,17 +458,14 @@
     <ClInclude Include="include\GL\glut.h" />
     <ClInclude Include="include\GL\glxew.h" />
     <ClInclude Include="include\GL\wglew.h" />
+    <ClInclude Include="include\helper.h" />
     <ClInclude Include="include\ogldev_basic_glfw_camera.h" />
     <ClInclude Include="include\ogldev_basic_lighting.h" />
-    <ClInclude Include="include\mesh.h" />
     <ClInclude Include="include\ogldev_basic_mesh.h" />
     <ClInclude Include="include\ogldev_callbacks.h" />
-    <ClInclude Include="include\ogldev_camera.h" />
-    <ClInclude Include="include\ogldev_camera_api.h" />
+    <ClInclude Include="include\BaseCamera.h" />
     <ClInclude Include="include\ogldev_engine_common.h" />
     <ClInclude Include="include\ogldev_glfw.h" />
-    <ClInclude Include="include\ogldev_glfw_camera_handler.h" />
-    <ClInclude Include="include\ogldev_glm_camera.h" />
     <ClInclude Include="include\ogldev_material.h" />
     <ClInclude Include="include\ogldev_math_3d.h" />
     <ClInclude Include="include\ogldev_mesh_common.h" />
@@ -483,6 +480,9 @@
     <ClInclude Include="include\ogldev_types.h" />
     <ClInclude Include="include\ogldev_util.h" />
     <ClInclude Include="include\ogldev_world_transform.h" />
+    <ClInclude Include="include\shader.h" />
+    <ClInclude Include="include\StaticMesh.h" />
+    <ClInclude Include="include\StaticModel.h" />
     <ClInclude Include="include\StaticTechnique.h" />
     <ClInclude Include="include\technique.h" />
   </ItemGroup>
@@ -680,9 +680,9 @@
     <None Include="include\glm\gtx\wrap.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\FpsCamera.h" />
     <ClCompile Include="include\glm\detail\glm.cpp" />
-    <ClCompile Include="include\Camera.h" />
-    <ClCompile Include="include\DrawDebugAxes.h" />
+    <ClCompile Include="src\Fps_Camera.cpp" />
     <ClCompile Include="src\maino.cpp" />
     <ClCompile Include="src\math_3d.cpp" />
     <ClCompile Include="src\glfw_camera.cpp" />
@@ -690,10 +690,13 @@
     <ClCompile Include="src\glfw.cpp" />
     <ClCompile Include="src\lighting.cpp" />
     <ClCompile Include="src\phong_renderer.cpp" />
+    <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="src\shadow_mapping_technique.cpp" />
     <ClCompile Include="src\shadow_map_fbo.cpp" />
     <ClCompile Include="src\skinned_mesh.cpp" />
     <ClCompile Include="src\skinning_technique.cpp" />
+    <ClCompile Include="src\StaticMesh.cpp" />
+    <ClCompile Include="src\StaticModel.cpp" />
     <ClCompile Include="src\StaticTechnique.cpp" />
     <ClCompile Include="src\texture.cpp" />
     <ClCompile Include="src\util.cpp" />
@@ -803,6 +806,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\ayakh\source\repos\GL_Animation2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

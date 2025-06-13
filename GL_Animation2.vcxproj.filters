@@ -1338,13 +1338,7 @@
     <ClInclude Include="include\ogldev_basic_lighting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\mesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\ogldev_callbacks.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ogldev_camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\ogldev_material.h">
@@ -1398,19 +1392,25 @@
     <ClInclude Include="include\ogldev_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\ogldev_glm_camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ogldev_camera_api.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ogldev_glfw_camera_handler.h">
+    <ClInclude Include="include\BaseCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\StaticTechnique.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\ogldev_basic_mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\StaticModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\StaticMesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -2041,16 +2041,25 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="include\Camera.h">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="include\DrawDebugAxes.h">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\maino.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\StaticTechnique.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\StaticMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\StaticModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\FpsCamera.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Fps_Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
