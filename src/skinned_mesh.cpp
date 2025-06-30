@@ -601,10 +601,10 @@ void SkinnedMesh::CalcLocalTransform(LocalTransform& Transform, float AnimationT
 
 void SkinnedMesh::GetBoneTransforms(float TimeInSeconds, vector<Matrix4f>& Transforms, unsigned int AnimationIndex)
 {
-    if (AnimationIndex >= m_pScene->mNumAnimations) {
-        printf("Invalid animation index %d, max is %d\n", AnimationIndex, m_pScene->mNumAnimations);
-        assert(0);
-    }
+    //if (AnimationIndex >= m_pScene->mNumAnimations) {
+    //    printf("Invalid animation index %d, max is %d\n", AnimationIndex, m_pScene->mNumAnimations);
+    //    assert(0);
+    //}
 
     Matrix4f Identity;
     Identity.InitIdentity();

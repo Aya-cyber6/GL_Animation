@@ -1332,7 +1332,7 @@
     <ClInclude Include="include\glm\vector_relational.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\ogldev_basic_glfw_camera.h">
+    <ClInclude Include="include\basic_glfw_camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\ogldev_basic_lighting.h">
@@ -1411,6 +1411,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\CameraX.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1988,6 +1991,14 @@
     <None Include="include\glm\gtx\wrap.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="Shaders\triangle.vert" />
+    <None Include="Shaders\triangle.frag" />
+    <None Include="Shaders\skinning.vs" />
+    <None Include="Shaders\static.frag" />
+    <None Include="Shaders\static.vert" />
+    <None Include="Shaders\shadow_map.vs" />
+    <None Include="Shaders\lighting_new.fs" />
+    <None Include="Shaders\lighting_new.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\glm\detail\glm.cpp">
@@ -2060,6 +2071,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Fps_Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\BaseCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CameraX.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

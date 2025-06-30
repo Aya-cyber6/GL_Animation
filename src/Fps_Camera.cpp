@@ -1,172 +1,231 @@
 #include "FpsCamera.h"
-#include <algorithm>
-#include <cmath> // for sin, cos
+#include <ogldev_glfw.h>
 
-// Constructor with vectors
-CameraFPS::CameraFPS(Vector3f position, Vector3f up, float yaw, float pitch)
-    : Front(Vector3f(0.0f, 0.0f, -1.0f)),
-    MovementSpeed(SPEED),
-    MouseSensitivity(SENSITIVITY),
-    Zoom(ZOOM)
-{
-    Position = position;
-    WorldUp = up;
-    Yaw = yaw;
-    Pitch = pitch;
-    updateCameraVectors();
+
+Camera::Camera(const Vector3f& pos, const Vector3f& target, const Vector3f& up, int width, int height) {
+    m_pos = pos;
+    m_target = target;
+    m_up = up;
+    m_windowWidth = width;
+    m_windowHeight = height;
+
+    m_AngleH = 0.0f;
+    m_AngleV = 0.0f;
+
+
+    m_mousePos = Vector2i(width / 2, height / 2);
+
+    UpdateProjection(60.0f, 0.1f, 100.0f); // Default FOV, near, far
 }
 
-// Constructor with scalar values
-CameraFPS::CameraFPS(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch)
-    : Front(Vector3f(0.0f, 0.0f, -1.0f)),
-    MovementSpeed(SPEED),
-    MouseSensitivity(SENSITIVITY),
-    Zoom(ZOOM)
-{
-    Position = Vector3f(posX, posY, posZ);
-    WorldUp = Vector3f(upX, upY, upZ);
-    Yaw = yaw;
-    Pitch = pitch;
-    updateCameraVectors();
+const Vector3f Camera::GetPos() const {
+    return m_pos;
 }
 
-// CameraAPI interface implementations
-const Vector3f CameraFPS::GetPos() const
-{
-    return Position;
+Matrix4f Camera::GetViewMatrix() const {
+    Matrix4f view;
+    view.InitCameraTransform(m_pos, m_target, m_up);
+    return view;
 }
 
-Matrix4f CameraFPS::GetViewportMatrix() const
-{
-    Matrix4f identity;
-    for (int i = 0; i < 4; i++)
-        for (int j = 0; j < 4; j++)
-            identity.m[i][j] = (i == j) ? 1.0f : 0.0f;
-    return identity;    
+Matrix4f Camera::GetMatrix() const {
+    return m_projection * GetViewMatrix();
 }
 
-Matrix4f CameraFPS::GetMatrix() const
-{
-    // View matrix is used here
-    return GetViewMatrix();
+Matrix4f Camera::CreatePerspectiveProjection(float fovDegrees, int width, int height, float nearPlane, float farPlane) const {
+    Matrix4f proj;
+    PersProjInfo p;
+    p.FOV = fovDegrees;
+    p.Width = width;
+    p.Height = height;
+    p.zNear = nearPlane;
+    p.zFar = farPlane;
+    proj.InitPersProjTransform(p);
+    return proj;
 }
 
-const Matrix4f CameraFPS::GetProjectionMat() const
-{
-    PersProjInfo projInfo;
-    projInfo.FOV = m_fov;
-    projInfo.Width = static_cast<float>(m_viewportWidth);
-    projInfo.Height = static_cast<float>(m_viewportHeight);
-    projInfo.zNear = m_nearPlane;
-    projInfo.zFar = m_farPlane;
-
-    Matrix4f projection;
-    projection.InitPersProjTransform(projInfo);
-    return projection;
+const Matrix4f Camera::GetProjectionMat() const {
+    return m_projection;
 }
 
-// Implement GetViewMatrix using ogldev_math_3d style
-Matrix4f CameraFPS::GetViewMatrix() const
+void Camera::UpdateProjection(float fovDegrees, float nearPlane, float farPlane) {
+    m_persProjInfo.FOV = fovDegrees;
+    m_persProjInfo.Width = m_windowWidth;
+    m_persProjInfo.Height = m_windowHeight;
+    m_persProjInfo.zNear = nearPlane;
+    m_persProjInfo.zFar = farPlane;
+
+    m_projection.InitPersProjTransform(m_persProjInfo);
+}
+
+void Camera::fpsOnMouse(int x, int y)
 {
-    // Normalize Front vector using your Normalize()
-    Vector3f f = Front;
-    f.Normalize();
+    static bool firstMouse = true;
+    if (firstMouse) {
+        m_mousePos.x = x;
+        m_mousePos.y = y;
+        firstMouse = false;
+    }
 
-    // Use your member Cross and Normalize methods
-    Vector3f s = f.Cross(WorldUp);
-    s.Normalize();
+    int deltaX = x - m_mousePos.x;
+    int deltaY = m_mousePos.y - y; // Invert y-axis for natural FPS feel
 
-    Vector3f u = s.Cross(f);
+    m_mousePos.x = x;
+    m_mousePos.y = y;
+
+    float sensitivity = 0.1f;
+    float yawChange = deltaX * sensitivity;
+    float pitchChange = deltaY * sensitivity;
+
+    m_AngleH += yawChange;
+    m_AngleV += pitchChange;
+
+    // Clamp vertical angle to avoid flipping
+    if (m_AngleV > 89.0f)  m_AngleV = 89.0f;
+    if (m_AngleV < -89.0f) m_AngleV = -89.0f;
+
+    Update();
+}
+
+void Camera::Update() {
+    // Clamp vertical angle to avoid flipping
+    const float MaxVerticalAngle = 89.0f;
+    if (m_AngleV > MaxVerticalAngle)  m_AngleV = MaxVerticalAngle;
+    if (m_AngleV < -MaxVerticalAngle) m_AngleV = -MaxVerticalAngle;
+
+    // Convert degrees to radians
+    const float pitch = m_AngleV * (3.14159265f / 180.0f);
+    const float yaw = m_AngleH * (3.14159265f / 180.0f);
+
+    // Calculate forward (target) vector
+    m_target.x = cosf(pitch) * sinf(yaw);
+    m_target.y = sinf(pitch);
+    m_target.z = cosf(pitch) * cosf(yaw);
+    m_target.Normalize();
+
+    // Global up vector
+    Vector3f globalUp(0.0f, 1.0f, 0.0f);
+
+    // Calculate right and up vectors using your Cross()
+
+    m_right = m_target.Cross(globalUp);
+    m_right.Normalize();
+
+    m_up = m_right.Cross(m_target);
+    m_up.Normalize();
+}
+
+bool Camera::OnKeyboard(int Key)
+{
+    bool CameraChangedPos = false;
+
+    switch (Key) {
+
+    case GLFW_KEY_W:
+        m_pos += m_target * m_speed;
+        CameraChangedPos = true;
+        break;
+
+    case GLFW_KEY_S:
+        m_pos -= m_target * m_speed;
+        CameraChangedPos = true;
+        break;
+
+    case GLFW_KEY_A:
+    {
+        Vector3f Left = m_right * -1.0f;  // Left is negative right
+        Left.Normalize();
+        Left *= m_speed;
+        m_pos += Left;
+        CameraChangedPos = true;
+    }
+    break;
+
+    case GLFW_KEY_D:
+    {
+        Vector3f Right = m_right;
+        Right.Normalize();
+        Right *= m_speed;
+        m_pos += Right;
+        CameraChangedPos = true;
+    }
+    break;
+
+    case GLFW_KEY_UP:
+        m_AngleV += m_speed;
+        Update();
+        break;
+
+    case GLFW_KEY_DOWN:
+        m_AngleV -= m_speed;
+        Update();
+        break;
+
+    case GLFW_KEY_LEFT:
+        m_AngleH -= m_speed;
+        Update();
+        break;
+
+    case GLFW_KEY_RIGHT:
+        m_AngleH += m_speed;
+        Update();
+        break;
+
+    case GLFW_KEY_KP_ADD:
+        m_speed += 0.1f;
+        printf("Speed changed to %f\n", m_speed);
+        break;
+
+    case GLFW_KEY_KP_SUBTRACT:
+        m_speed -= 0.1f;
+        if (m_speed < 0.1f) m_speed = 0.1f;
+        printf("Speed changed to %f\n", m_speed);
+        break;
+
+    case GLFW_KEY_C:
+        printf("Camera pos: "); m_pos.Print(); printf("\n");
+        printf("Camera target: "); m_target.Print(); printf("\n");
+        break;
+    }
+
+    return CameraChangedPos;
+}
+
+
+Matrix4f Camera::GetViewportMatrix() const
+{
+    return LookAt(m_pos, m_pos + m_target, m_up);
+}
+
+
+Matrix4f Camera::LookAt(const Vector3f& eye, const Vector3f& center, const Vector3f& up) const
+{
+    Vector3f f = (center - eye).Normalize(); // Forward
+    Vector3f r = f.Cross(up).Normalize();    // Right
+    Vector3f u = r.Cross(f);                 // Recomputed Up
 
     Matrix4f result;
     result.InitIdentity();
 
-    result.m[0][0] = s.x;
-    result.m[1][0] = s.y;
-    result.m[2][0] = s.z;
+    result.m[0][0] = r.x;
+    result.m[0][1] = r.y;
+    result.m[0][2] = r.z;
+    result.m[0][3] = -r.Dot(eye);
 
-    result.m[0][1] = u.x;
+    result.m[1][0] = u.x;
     result.m[1][1] = u.y;
-    result.m[2][1] = u.z;
+    result.m[1][2] = u.z;
+    result.m[1][3] = -u.Dot(eye);
 
-    result.m[0][2] = -f.x;
-    result.m[1][2] = -f.y;
+    result.m[2][0] = -f.x;
+    result.m[2][1] = -f.y;
     result.m[2][2] = -f.z;
+    result.m[2][3] = f.Dot(eye); // Usually -f.Dot(eye), adjust if needed
 
-    result.m[0][3] = 0.0f;
-    result.m[1][3] = 0.0f;
-    result.m[2][3] = 0.0f;
-
-    // Use member Dot for dot product
-    result.m[3][0] = -s.Dot(Position);
-    result.m[3][1] = -u.Dot(Position);
-    result.m[3][2] = f.Dot(Position);
+    result.m[3][0] = 0.0f;
+    result.m[3][1] = 0.0f;
+    result.m[3][2] = 0.0f;
     result.m[3][3] = 1.0f;
 
     return result;
-}
-
-void CameraFPS::ProcessKeyboard(Camera_Movement direction, float deltaTime)
-{
-    float velocity = MovementSpeed * deltaTime;
-    if (direction == FORWARD)
-        Position = Position + Front * velocity;
-    else if (direction == BACKWARD)
-        Position = Position - Front * velocity;
-    else if (direction == LEFT)
-        Position = Position - Right * velocity;
-    else if (direction == RIGHT)
-        Position = Position + Right * velocity;
-}
-
-void CameraFPS::ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch)
-{
-    xoffset *= MouseSensitivity;
-    yoffset *= MouseSensitivity;
-
-    Yaw += xoffset;
-    Pitch += yoffset;
-
-    if (constrainPitch) {
-        Pitch = std::clamp(Pitch, -89.0f, 89.0f);
-    }
-
-    updateCameraVectors();
-}
-
-void CameraFPS::ProcessMouseScroll(float yoffset)
-{
-    Zoom -= yoffset;
-    Zoom = std::clamp(Zoom, 1.0f, 45.0f);
-
-    m_fov = Zoom;
-}
-
-void CameraFPS::SetProjectionParams(float fov, float aspectRatio, float nearPlane, float farPlane)
-{
-    m_fov = fov;
-    m_aspectRatio = aspectRatio;
-    m_nearPlane = nearPlane;
-    m_farPlane = farPlane;
-}
-
-void CameraFPS::SetViewportSize(int width, int height)
-{
-    m_viewportWidth = width;
-    m_viewportHeight = height;
-    m_aspectRatio = static_cast<float>(width) / static_cast<float>(height);
-}
-
-void CameraFPS::updateCameraVectors()
-{
-    // Calculate new Front vector based on Euler angles
-    Vector3f front;
-    front.x = cos(ToRadian(Yaw)) * cos(ToRadian(Pitch));
-    front.y = sin(ToRadian(Pitch));
-    front.z = sin(ToRadian(Yaw)) * cos(ToRadian(Pitch));
-    Front = front.Normalize();  // Normalize returns Vector3f& so this works
-
-    // Recalculate Right and Up vectors using your member Cross and Normalize
-    Right = Front.Cross(WorldUp).Normalize();
-    Up = Right.Cross(Front).Normalize();
 }

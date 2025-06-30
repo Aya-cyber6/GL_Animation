@@ -1,75 +1,44 @@
 #pragma once
 
-#include <ogldev_math_3d.h>
 #include "BaseCamera.h"
+#include "ogldev_math_3d.h"
 
-// Defines several possible options for CameraFPS movement
-enum Camera_Movement {
-    FORWARD,
-    BACKWARD,
-    LEFT,
-    RIGHT
-};
-
-// Default CameraFPS values
-const float YAW = -90.0f;
-const float PITCH = 0.0f;
-const float SPEED = 2.5f;
-const float SENSITIVITY = 0.1f;
-const float ZOOM = 45.0f;
-
-class CameraFPS : public CameraAPI
-{
+class Camera : public CameraAPI {
 public:
-    Vector3f Position;
-    Vector3f Front;
-    Vector3f Up;
-    Vector3f Right;
-    Vector3f WorldUp;
+    Camera(const Vector3f& pos, const Vector3f& target, const Vector3f& up, int width, int height);
 
-    // Euler Angles
-    float Yaw;
-    float Pitch;
+    virtual const Vector3f GetPos() const override;
+    virtual Matrix4f GetViewMatrix() const override;
+    virtual Matrix4f GetMatrix() const override;
+    virtual Matrix4f CreatePerspectiveProjection(float fovDegrees, int width, int height, float nearPlane, float farPlane) const override;
+    virtual const Matrix4f GetProjectionMat() const override;
 
-    // CameraFPS options
-    float MovementSpeed;
-    float MouseSensitivity;
-    float Zoom;
+    void fpsOnMouse(int x, int y);
 
-    // Constructors
-    CameraFPS(Vector3f position = Vector3f(0.0f, 0.0f, 0.0f),
-        Vector3f up = Vector3f(0.0f, 1.0f, 0.0f),
-        float yaw = YAW,
-        float pitch = PITCH);
+    bool OnKeyboard(int key);
 
-    CameraFPS(float posX, float posY, float posZ,
-        float upX, float upY, float upZ,
-        float yaw, float pitch);
+    Matrix4f GetViewportMatrix() const;
 
-    // CameraAPI interface implementation
-    const Vector3f GetPos() const override;
-    Matrix4f GetViewportMatrix() const override;
-    Matrix4f GetMatrix() const override;
-    const Matrix4f GetProjectionMat() const override;
+    Matrix4f LookAt(const Vector3f& eye, const Vector3f& center, const Vector3f& up) const;
 
-    // Original OpenGL-specific methods
-    Matrix4f GetViewMatrix() const;
-    void ProcessKeyboard(Camera_Movement direction, float deltaTime);
-    void ProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
-    void ProcessMouseScroll(float yoffset);
-
-    // Setters for projection parameters
-    void SetProjectionParams(float fov, float aspectRatio, float nearPlane, float farPlane);
-    void SetViewportSize(int width, int height);
+    void UpdateProjection(float fovDegrees, float nearPlane, float farPlane);
+    Vector3f m_right;  // Right vector
 
 private:
-    // Projection parameters
-    float m_fov = 45.0f;
-    float m_aspectRatio = 16.0f / 9.0f;
-    float m_nearPlane = 0.1f;
-    float m_farPlane = 100.0f;
-    int m_viewportWidth = 1024;
-    int m_viewportHeight = 768;
+    Vector2i m_mousePos;
 
-    void updateCameraVectors();
+    float m_speed = 0.2f;
+    float m_AngleH; // Yaw
+    float m_AngleV; // Pitch
+    int m_windowWidth = 0;
+    int m_windowHeight = 0;
+
+    Vector3f m_pos;    // Position
+    Vector3f m_target; // Direction (forward)
+    Vector3f m_up;     // Up vector
+
+    PersProjInfo m_persProjInfo;
+    Matrix4f m_projection;
+    void Update();
+
 };

@@ -236,9 +236,9 @@ void PhongRenderer::Render(BasicMesh* pMesh)
     Matrix4f World = pMesh->GetWorldTransform().GetMatrix();
     m_lightingTech.SetWorldMatrix(World);
 
-    if (m_subTech == LightingTechnique::SUBTECH_WIREFRAME_ON_MESH) {
-        m_lightingTech.SetViewportMatrix(m_pCamera->GetViewportMatrix());
-    }
+    //if (m_subTech == LightingTechnique::SUBTECH_WIREFRAME_ON_MESH) {
+    //    m_lightingTech.SetViewportMatrix(m_pCamera->GetViewportMatrix());
+    //}
 
     pMesh->Render();
 }

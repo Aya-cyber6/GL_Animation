@@ -79,11 +79,11 @@ bool BasicMesh::LoadMesh(const string& Filename, int AssimpFlags)
 
         directory = Filename.substr(0, Filename.find_last_of('/'));
 
-    if (m_pScene->mNumAnimations == 0) {
-        hasAnim = false;
-        std::cout << "Scene contains no animationssssssssss." << std::endl;
-        return true;
-    }
+    //if (m_pScene->mNumAnimations == 0) {
+    //    hasAnim = false;
+    //    std::cout << "Scene contains no animationssssssssss." << std::endl;
+    //    return true;
+    //}
 
 
     // Create the VAO
@@ -695,7 +695,7 @@ void BasicMesh::Render(IRenderCallbacks* pRenderCallbacks)
     }
 
     glBindVertexArray(m_VAO);
-
+    glGetError();
     for (unsigned int MeshIndex = 0; MeshIndex < m_Meshes.size(); MeshIndex++) {
         unsigned int MaterialIndex = m_Meshes[MeshIndex].MaterialIndex;
         assert(MaterialIndex < m_Materials.size());
@@ -710,8 +710,10 @@ void BasicMesh::Render(IRenderCallbacks* pRenderCallbacks)
             (void*)(sizeof(unsigned int) * m_Meshes[MeshIndex].BaseIndex),
             m_Meshes[MeshIndex].BaseVertex);
     }
-
-    // Make sure the VAO is not changed from the outside
+    GLenum err = glGetError();
+    if (err != GL_NO_ERROR) {
+        printf("OpenGL error: %d\n", err);
+    }    // Make sure the VAO is not changed from the outside
     glBindVertexArray(0);
 }
 

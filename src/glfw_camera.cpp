@@ -1,7 +1,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "ogldev_basic_glfw_camera.h"
+#include "basic_glfw_camera.h"
 
 static int MARGIN = 40;
 static float EDGE_STEP = 0.5f;
@@ -346,4 +346,96 @@ void BasicCamera::SetSpeed(float Speed)
     }
 
     m_speed = Speed;
+}
+
+
+Matrix4f BasicCamera::CreatePerspectiveProjection(float fovDegrees, int width, int height, float nearPlane, float farPlane) const {
+    PersProjInfo p;
+    p.FOV = fovDegrees;
+    p.Width = static_cast<float>(width);
+    p.Height = static_cast<float>(height);
+    p.zNear = nearPlane;
+    p.zFar = farPlane;
+
+    Matrix4f proj;
+    proj.InitPersProjTransform(p); 
+    return proj;
+}
+
+
+
+bool BasicCamera::fpsOnKeyboard(int Key)
+{
+    bool CameraChangedPos = false;
+
+    switch (Key) {
+
+    case GLFW_KEY_W:
+        m_pos += m_target * m_speed;
+        CameraChangedPos = true;
+        break;
+
+    case GLFW_KEY_S:
+        m_pos -= m_target * m_speed;
+        CameraChangedPos = true;
+        break;
+
+    case GLFW_KEY_A:
+    {
+        Vector3f Left = m_right * -1.0f;  // Left is negative right
+        Left.Normalize();
+        Left *= m_speed;
+        m_pos += Left;
+        CameraChangedPos = true;
+    }
+    break;
+
+    case GLFW_KEY_D:
+    {
+        Vector3f Right = m_right;
+        Right.Normalize();
+        Right *= m_speed;
+        m_pos += Right;
+        CameraChangedPos = true;
+    }
+    break;
+
+    case GLFW_KEY_UP:
+        m_AngleV += m_speed;
+        Update();
+        break;
+
+    case GLFW_KEY_DOWN:
+        m_AngleV -= m_speed;
+        Update();
+        break;
+
+    case GLFW_KEY_LEFT:
+        m_AngleH -= m_speed;
+        Update();
+        break;
+
+    case GLFW_KEY_RIGHT:
+        m_AngleH += m_speed;
+        Update();
+        break;
+
+    case GLFW_KEY_KP_ADD:
+        m_speed += 0.1f;
+        printf("Speed changed to %f\n", m_speed);
+        break;
+
+    case GLFW_KEY_KP_SUBTRACT:
+        m_speed -= 0.1f;
+        if (m_speed < 0.1f) m_speed = 0.1f;
+        printf("Speed changed to %f\n", m_speed);
+        break;
+
+    case GLFW_KEY_C:
+        printf("Camera pos: "); m_pos.Print(); printf("\n");
+        printf("Camera target: "); m_target.Print(); printf("\n");
+        break;
+    }
+
+    return CameraChangedPos;
 }

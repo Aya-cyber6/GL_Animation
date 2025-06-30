@@ -9,6 +9,7 @@
 #include "ogldev_basic_mesh.h"
 #include "ogldev_skinned_mesh.h"
 #include "ogldev_shadow_mapping_technique.h"
+#include <CameraX.h>
 
 
 class PhongRenderer {
@@ -22,7 +23,7 @@ class PhongRenderer {
 
     void StartShadowPass();
 
-    void SetCamera(const CameraAPI* pCamera) { m_pCamera = pCamera; }
+    void SetCamera(const CameraX* pCamera) { m_pCamera = pCamera; }
 
     void SetPBR(bool IsPBR);
 
@@ -87,7 +88,7 @@ class PhongRenderer {
 
     void RenderAnimationCommon(SkinnedMesh* pMesh);
 
-    const CameraAPI* m_pCamera = NULL;
+    const CameraX* m_pCamera = NULL;
     int m_subTech = LightingTechnique::SUBTECH_DEFAULT;
     LightingTechnique m_lightingTech;
     SkinningTechnique m_skinningTech;

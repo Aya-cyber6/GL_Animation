@@ -3,7 +3,7 @@
 
 #include "ogldev_engine_common.h"
 #include "ogldev_util.h"
-#include "ogldev_basic_glfw_camera.h"
+#include "basic_glfw_camera.h"
 #include "ogldev_new_lighting.h"
 #include "ogldev_glfw.h"
 #include "ogldev_mesh_common.h"
@@ -12,6 +12,9 @@
 #include "StaticModel.h"
 #include "FpsCamera.h"
 #include <iostream>
+#include "CameraX.h"
+
+Shader* triangleShader = nullptr;
 
 #define WINDOW_WIDTH  1920
 #define WINDOW_HEIGHT 1080
@@ -26,23 +29,27 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 
+Vector3f camTarget(0.0f, -1.0f, 0.0f);
+
+Vector3f cameraPos(2.0f, 14.0f, 55.0f);
+Vector3f cameraFront(0.0f, 0.0f, -1.0f);
+Vector3f cameraUp(0.0f, 1.0f, 0.0f);
+float cameraSpeed = 5.0f * deltaTime; // adjust deltaTime each frame
+
+float yaw = -90.0f;
+float pitch = 0.0f;
+float lastX = 960.0f;  // Half of 1920
+float lastY = 540.0f;  // Half of 1080
+bool firstMouse = true;
+
+
 class Tutorial40
 {
 public:
-    CameraFPS* fpsCamera = nullptr;
-    CameraAPI* currentCamera = nullptr;
 
     Tutorial40()
     {
-        fpsCamera = new CameraFPS(
-            0.0f, 0.0f, 3.0f,    // position (x, y, z)
-            0.0f, 1.0f, 0.0f,    // up vector (x, y, z)
-            -90.0f,              // yaw
-            0.0f                 // pitch
-        );
-
-        currentCamera = fpsCamera;
-
+        //Camera fpsCamera(glm::vec3(0.0f, 0.2f, 2.0f));  // Slightly higher Y and further Z
         m_dirLight.WorldDirection = Vector3f(0.0f, -1.0f, 0.0f);
         m_dirLight.DiffuseIntensity = 1.0f;
         m_dirLight.AmbientIntensity = 0.5f;
@@ -50,8 +57,8 @@ public:
 
     virtual ~Tutorial40()
     {
-        SAFE_DELETE(fpsCamera);
-        SAFE_DELETE(m_pGameCamera);
+        //SAFE_DELETE(fpsCamera);
+        //SAFE_DELETE(m_pGameCamera);
     }
 
 
@@ -62,7 +69,7 @@ public:
         InitCallbacks();
 
         InitCamera();
-
+        //currentCamera = m_pGameCamera;
         InitMesh();
 
         if (!m_pMesh->hasAnim) {
@@ -70,6 +77,9 @@ public:
             return;
         }
         InitRenderer();
+
+        //InitTriangle();
+        //triangleShader = new Shader("Shaders/triangle.vert", "Shaders/triangle.frag");
 
         m_startTime = GetCurrentTimeMillis();
         m_currentTime = m_startTime;
@@ -79,61 +89,18 @@ public:
     void Run()
     {
         while (!glfwWindowShouldClose(window)) {
-            RenderStatic();
-            //RenderSceneCB();
+            //RenderStatic();
+            RenderSceneCB();
             glfwSwapBuffers(window);
             glfwPollEvents();
         }
     }
 
-    void RenderStatic() {
-        float currentFrame = static_cast<float>(glfwGetTime());
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
-
-        glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        Shader ourShader("Shaders/static.vert", "Shaders/static.frag");
-        ourShader.use();
-
-        // Light direction (Vector3f)
-        Vector3f lightDir(-0.2f, -1.0f, -0.3f);
-        ourShader.setVec3("light.direction", lightDir);
-
-        ourShader.setVec3("light.ambient", Vector3f(0.2f, 0.2f, 0.2f));   // ambient light
-        ourShader.setVec3("light.diffuse", Vector3f(0.7f, 0.7f, 0.7f));   // diffuse light
-        ourShader.setVec3("light.specular", Vector3f(0.5f, 0.5f, 0.5f));  // specular highlights
-
-        // Camera position (specular calculations)
-        ourShader.setVec3("viewPos", currentCamera->GetPos());
-
-        // Projection matrix (custom Perspective)
-        float aspectRatio = (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT;
-        Matrix4f projection = currentCamera->GetProjectionMat();
-        // OR use: Matrix4f::Perspective(camera.Zoom, aspectRatio, 0.1f, 100.0f);
-
-        // View matrix
-        Matrix4f view = currentCamera->GetViewportMatrix();
-
-        ourShader.setMat4("projection", projection);
-        ourShader.setMat4("view", view);
-
-        // Model matrix: scaling 0.01x
-        Matrix4f model_world;
-        model_world.InitScaleTransform(0.01f, 0.01f, 0.01f);
-
-        ourShader.setMat4("model", model_world);
-
-        worldModel->Draw(ourShader);
-    }
-
-
     void RenderSceneCB()
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        m_pGameCamera->OnRender();
+        //m_pGameCamera->OnRender();
 
         if (m_runAnimation) {
             m_currentTime = GetCurrentTimeMillis();
@@ -144,39 +111,54 @@ public:
         float TotalPauseTimeSec = (float)((double)m_totalPauseTime / 1000.0f);
         AnimationTimeSec -= TotalPauseTimeSec;
 
+        m_phongRenderer.Render(mesh);
+        //m_phongRenderer.Render(mesh);
+
         m_phongRenderer.RenderAnimation(m_pMesh, AnimationTimeSec, m_animationIndex);
+        //std::cout << "Animation Time: " << AnimationTimeSec << ", Index: " << m_animationIndex << std::endl;
+            // Draw the triangle beside it
+    // -----------------------------
+        //triangleShader->use();
+
+        //Matrix4f projection = camera->GetProjectionMat();
+        //Matrix4f view = camera->GetMatrix();
+
+        //// Position triangle a bit to the side of the model
+        //Matrix4f model;
+        //model.InitIdentity();
+        //
+        //model.InitTranslationTransform(4.0f, 18.0f, 80.0f); // Adjust x to position beside the model
+        //
+        //model.InitScaleTransform(Vector3f(0.1f)); // Optional: Scale triangle if too small
+
+        //triangleShader->setMat4("model", model);
+        //triangleShader->setMat4("view", view);
+        //triangleShader->setMat4("projection", projection);
+
+        //glBindVertexArray(triangleVAO);
+        //glDrawArrays(GL_TRIANGLES, 0, 3);
+        //std::cout << "STATUS: " <<"TRIANGLE DRAWN" << std::endl;
+
+        //glBindVertexArray(0);
+
     }
 
-    
+
 #define ATTEN_STEP 0.01f
 
 #define ANGLE_STEP 1.0f
 
     void PassiveMouseCB(int x, int y)
     {
-        if (currentCamera == m_pGameCamera) {
-            m_pGameCamera->OnMouse(x, y);
+        camera->OnMouse(x, y, true);
 
-        }
-        else {
-            fpsCamera->ProcessMouseMovement(x, y);
-
-        }
     }
-
+  
     void KeyboardCB(uint key, int state)
     {
         if (state == GLFW_PRESS) {
 
             switch (key) {
-
-                case GLFW_KEY_C:
-                    if (currentCamera == fpsCamera)
-                        currentCamera = m_pGameCamera;
-                    else
-                        currentCamera = fpsCamera;
-                    break;
-       
 
             case GLFW_KEY_0:
                 m_animationIndex = 0;
@@ -215,19 +197,52 @@ public:
                 exit(0);
             }
         }
-
-        m_pGameCamera->OnKeyboard(key);
-        //fpsCamera->OnKeyboard(key);
-
+        camera->OnKeyboard(key);
     }
-
 
     void MouseCB(int button, int action, int x, int y)
     {
+        if (button == GLFW_MOUSE_BUTTON_LEFT) {
+            if (action == GLFW_PRESS){
+                camera->m_mousePressed = true;
+                camera->SetMousePos(x, y);  // Set current position to avoid jump
+            }
+            else if (action == GLFW_RELEASE){
+                camera->m_mousePressed = false;
+                }
+        }
     }
 
 
 private:
+
+    unsigned int triangleVAO, triangleVBO;
+
+    void InitTriangle()
+    {
+        float triangleVertices[] = {
+            // positions         // colors
+             1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f,
+             0.5f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f,
+             0.0f,  0.0f,  0.0f,  0.0f, 0.0f, 1.0f
+        };
+
+        glGenVertexArrays(1, &triangleVAO);
+        glGenBuffers(1, &triangleVBO);
+
+        glBindVertexArray(triangleVAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, triangleVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices), triangleVertices, GL_STATIC_DRAW);
+
+        // Position
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+        // Color
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+    }
+
 
     void CreateWindow()
     {
@@ -250,63 +265,63 @@ private:
 
     void InitCamera()
     {
-        Vector3f Pos(0.0f, 0.0f, 0.0f);
-        Vector3f Target(0.0f, 0.0f, 1.0f);
-        Vector3f Up(0.0, 1.0f, 0.0f);
+        // First-person mode example
+        camera = new CameraX(WINDOW_WIDTH, WINDOW_HEIGHT);
+        Vector3f characterPos(0.0f, 0.0f, 5.0f);
+        Vector3f characterDir(0.0f, 0.0f, -1.0f);
+        //camera->SetFirstPerson(characterPos, characterDir);
+        camera->SetFreeFly(cameraPos, (camTarget - cameraPos).Normalize());
 
-        float FOV = 45.0f;
-        float zNear = 0.1f;
-        float zFar = 100.0f;
-        PersProjInfo persProjInfo = { FOV, (float)WINDOW_WIDTH, (float)WINDOW_HEIGHT, zNear, zFar };
+        // Or Free-fly camera
+        // camera.SetFreeFly(Vector3f(5.0f, 2.0f, 5.0f), Vector3f(-1.0f, 0.0f, -1.0f));
 
-        m_pGameCamera = new BasicCamera(persProjInfo, Pos, Target, Up);
+        // Or Cinematic camera (e.g., rotating around the scene)
+        float time = glfwGetTime(); // or any timer
+        //camera->SetCinematic(time);
+
     }
 
 
     void InitRenderer()
     {
         m_phongRenderer.InitPhongRenderer();
-        m_phongRenderer.SetCamera(m_pGameCamera);
+        m_phongRenderer.SetCamera(camera);
         m_phongRenderer.SetDirLight(m_dirLight);
     }
-
 
     void InitMesh()
     {
         m_pMesh = new SkinnedMesh();
-    
-        m_pMesh->LoadMesh("Content/Station/stationgarden.obj");
-        //m_pMesh->LoadMesh("Content/boblampclean.md5mesh");
-        std::cout << "*************Scene contains no animations*******************************." << std::endl;
+        //m_pMesh->LoadMesh("Content/dancing_vampire.dae");
+        m_pMesh->LoadMesh("Content/BatmanAnimated/BatmanAnimated.DAE");
 
-        if (!m_pMesh->hasAnim) {
-            worldModel = new StaticModel(m_pMesh->m_pScene->mRootNode, m_pMesh->m_pScene, m_pMesh->directory);
-            return;
-        }
+        mesh = new BasicMesh();
+        mesh->LoadMesh("Content/Station/stationgarden.obj");
+
         m_pMesh->SetRotation(0.0f, 180.0f, 0.0f);
-        m_pMesh->SetPosition(0.0f, 15.0f, 10.0f);
-        m_pMesh->SetScale(0.1f);
+        m_pMesh->SetPosition(1, 19.7423, 130.0338);
+        m_pMesh->SetScale(0.01f);
+
+        mesh->SetRotation(0.0f, 180.0f, 0.0f);
+        mesh->SetPosition(1, 19.7423, 130.0338);
+        mesh->SetScale(0.1f);
     }
 
     GLFWwindow* window = NULL;
-    BasicCamera* m_pGameCamera = NULL;
+    CameraX* camera = NULL;
     PhongRenderer m_phongRenderer;
     SkinnedMesh* m_pMesh = NULL;
+
     PersProjInfo m_persProjInfo;
     DirectionalLight m_dirLight;
+    BasicMesh* mesh = NULL;
+
     long long m_startTime = 0;
     long long m_currentTime = 0;
     bool m_runAnimation = true;
     long long m_totalPauseTime = 0;
     long long m_pauseStart = 0;
     int m_animationIndex = 0;
-
-
-    //protected:
-    //    const aiScene* m_pScene;
-    //    Assimp::Importer m_Importer;
-
-
 };
 
 Tutorial40* app = NULL;
@@ -339,7 +354,7 @@ int main(int argc, char** argv)
 
     app->Init();
 
-    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
     glFrontFace(GL_CW);
     glCullFace(GL_BACK);
     glEnable(GL_CULL_FACE);

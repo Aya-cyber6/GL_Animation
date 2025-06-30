@@ -106,6 +106,7 @@
     <ClInclude Include="include\assimp5\assimp\XmlParser.h" />
     <ClInclude Include="include\assimp5\assimp\XMLTools.h" />
     <ClInclude Include="include\assimp5\assimp\ZipArchiveIOSystem.h" />
+    <ClInclude Include="include\CameraX.h" />
     <ClInclude Include="include\GLFW\glfw3.h" />
     <ClInclude Include="include\GLFW\glfw3native.h" />
     <ClInclude Include="include\gli\clear.hpp" />
@@ -459,7 +460,7 @@
     <ClInclude Include="include\GL\glxew.h" />
     <ClInclude Include="include\GL\wglew.h" />
     <ClInclude Include="include\helper.h" />
-    <ClInclude Include="include\ogldev_basic_glfw_camera.h" />
+    <ClInclude Include="include\basic_glfw_camera.h" />
     <ClInclude Include="include\ogldev_basic_lighting.h" />
     <ClInclude Include="include\ogldev_basic_mesh.h" />
     <ClInclude Include="include\ogldev_callbacks.h" />
@@ -678,10 +679,20 @@
     <None Include="include\glm\gtx\vector_angle.inl" />
     <None Include="include\glm\gtx\vector_query.inl" />
     <None Include="include\glm\gtx\wrap.inl" />
+    <None Include="Shaders\lighting_new.fs" />
+    <None Include="Shaders\lighting_new.vs" />
+    <None Include="Shaders\shadow_map.vs" />
+    <None Include="Shaders\skinning.vs" />
+    <None Include="Shaders\static.frag" />
+    <None Include="Shaders\static.vert" />
+    <None Include="Shaders\triangle.frag" />
+    <None Include="Shaders\triangle.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\BaseCamera.cpp" />
     <ClCompile Include="include\FpsCamera.h" />
     <ClCompile Include="include\glm\detail\glm.cpp" />
+    <ClCompile Include="src\CameraX.cpp" />
     <ClCompile Include="src\Fps_Camera.cpp" />
     <ClCompile Include="src\maino.cpp" />
     <ClCompile Include="src\math_3d.cpp" />
@@ -805,13 +816,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\ayakh\source\repos\GL_Animation2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\ayakh\source\repos\GL_Animation_Clone\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\ayakh\source\repos\GL_Animation2\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\ayakh\source\repos\GL_Animation2\Lib;</AdditionalLibraryDirectories>
       <AdditionalDependencies>meshoptimizer.lib;assimp-vc143-mt.lib;glew32.lib;glfw3dll.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
