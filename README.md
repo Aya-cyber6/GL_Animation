@@ -59,6 +59,7 @@ This project demonstrates 3D character animation and dynamic camera control usin
 - Proper error handling and resource management (e.g., deleting allocated objects) are implemented.
 
 ## Rapor
+https://docs.google.com/document/d/1Kb8SRBrA7iHRzKZELqXtprR3cTYU8gZ8KM0o3kowPiE/edit?usp=sharing
 (only accessible through iüc school email)
 
 ## Screenshot & Video
