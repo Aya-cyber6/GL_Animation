@@ -58,10 +58,6 @@ This project demonstrates 3D character animation and dynamic camera control usin
 - Animation timing and pause/play functionality are managed internally with precise time calculations.
 - Proper error handling and resource management (e.g., deleting allocated objects) are implemented.
 
-## Screenshot & Vid
-![image](https://github.com/user-attachments/assets/a968056e-11f4-42c8-a83c-d657664e6e23)
-https://youtu.be/409cszuZyEI
-
 ## Rapor
 (only accessible through iüc school email)
 
