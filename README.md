@@ -31,9 +31,9 @@ This project demonstrates 3D character animation and dynamic camera control usin
 
 ## Controls
 ### Camera Modes:
-- **C** - First-Person Camera
-- **V** - Free-Fly Camera (default)
-- **B** - Cinematic Camera
+- Press `C` for First-Person Camera  
+- Press `V` for Free-Fly Camera (default)  
+- Press `B` for Cinematic Camera  
 
 ### Animation Selection:
 - Keys **0** to **3** - Switch between different animations
@@ -58,8 +58,16 @@ This project demonstrates 3D character animation and dynamic camera control usin
 - Animation timing and pause/play functionality are managed internally with precise time calculations.
 - Proper error handling and resource management (e.g., deleting allocated objects) are implemented.
 
-## Screenshot
+## Screenshot & Vid
 ![image](https://github.com/user-attachments/assets/a968056e-11f4-42c8-a83c-d657664e6e23)
+https://youtu.be/409cszuZyEI
+
+## Rapor
+(only accessible through iüc school email)
+
+## Screenshot & Video
+![image](https://github.com/user-attachments/assets/a968056e-11f4-42c8-a83c-d657664e6e23)  
+📹 [Watch the demo](https://youtu.be/409cszuZyEI)
 
 ## Credits
 This project is based on [ogldev](http://ogldev.atspace.co.uk/) tutorials.
