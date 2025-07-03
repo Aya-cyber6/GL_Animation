@@ -31,7 +31,6 @@ public:
 
     Vector3f m_pos;
     Vector3f m_target;
-    Vector3f m_target1;
     Vector3f m_up;
     Vector3f Front;
     Vector3f WorldUp;
@@ -54,9 +53,10 @@ public:
     Matrix4f GetProjectionMat(float aspectRatio = (float)WINDOW_WIDTH / WINDOW_HEIGHT) const;
     Matrix4f LookAt(const Vector3f& eye, const Vector3f& center, const Vector3f& up) const;
 
+    Vector3f GetTarget() const { return m_pos; }
     void SetFirstPerson(const Vector3f& characterPos, const Vector3f& characterDir);
     void SetFreeFly(const Vector3f& pos, const Vector3f& front);
-    void SetCinematic(float time);
+    void SetCinematic(float time, const Vector3f& characterPos, const Vector3f& characterForward);
     bool OnKeyboard(int Key);
     void SetMousePos(int x, int y);
     void OnMouse(float xoffset, float yoffset, GLboolean constrainPitch);

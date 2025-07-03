@@ -56,6 +56,8 @@ public:
                                   unsigned int StartAnimIndex,
                                   unsigned int EndAnimIndex,
                                   float BlendFactor);
+    Vector3f GetForwardDirection() const;
+
 private:
     #define MAX_NUM_BONES_PER_VERTEX 4
 

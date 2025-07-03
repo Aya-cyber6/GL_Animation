@@ -77,14 +77,10 @@ bool BasicMesh::LoadMesh(const string& Filename, int AssimpFlags)
         return false;
     }
 
+    std::cout <<"this model has: "<< m_pScene->mNumAnimations <<" animations" << std::endl;
+
+
         directory = Filename.substr(0, Filename.find_last_of('/'));
-
-    //if (m_pScene->mNumAnimations == 0) {
-    //    hasAnim = false;
-    //    std::cout << "Scene contains no animationssssssssss." << std::endl;
-    //    return true;
-    //}
-
 
     // Create the VAO
     if (IsGLVersionHigher(4, 5)) {

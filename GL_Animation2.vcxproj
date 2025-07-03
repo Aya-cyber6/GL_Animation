@@ -459,12 +459,9 @@
     <ClInclude Include="include\GL\glut.h" />
     <ClInclude Include="include\GL\glxew.h" />
     <ClInclude Include="include\GL\wglew.h" />
-    <ClInclude Include="include\helper.h" />
-    <ClInclude Include="include\basic_glfw_camera.h" />
     <ClInclude Include="include\ogldev_basic_lighting.h" />
     <ClInclude Include="include\ogldev_basic_mesh.h" />
     <ClInclude Include="include\ogldev_callbacks.h" />
-    <ClInclude Include="include\BaseCamera.h" />
     <ClInclude Include="include\ogldev_engine_common.h" />
     <ClInclude Include="include\ogldev_glfw.h" />
     <ClInclude Include="include\ogldev_material.h" />
@@ -483,11 +480,10 @@
     <ClInclude Include="include\ogldev_world_transform.h" />
     <ClInclude Include="include\shader.h" />
     <ClInclude Include="include\StaticMesh.h" />
-    <ClInclude Include="include\StaticModel.h" />
-    <ClInclude Include="include\StaticTechnique.h" />
     <ClInclude Include="include\technique.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".gitignore" />
     <None Include="include\assimp5\assimp\color4.inl" />
     <None Include="include\assimp5\assimp\material.inl" />
     <None Include="include\assimp5\assimp\matrix3x3.inl" />
@@ -689,14 +685,10 @@
     <None Include="Shaders\triangle.vert" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\BaseCamera.cpp" />
-    <ClCompile Include="include\FpsCamera.h" />
     <ClCompile Include="include\glm\detail\glm.cpp" />
     <ClCompile Include="src\CameraX.cpp" />
-    <ClCompile Include="src\Fps_Camera.cpp" />
-    <ClCompile Include="src\maino.cpp" />
+    <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\math_3d.cpp" />
-    <ClCompile Include="src\glfw_camera.cpp" />
     <ClCompile Include="src\basic_mesh.cpp" />
     <ClCompile Include="src\glfw.cpp" />
     <ClCompile Include="src\lighting.cpp" />
@@ -706,15 +698,11 @@
     <ClCompile Include="src\shadow_map_fbo.cpp" />
     <ClCompile Include="src\skinned_mesh.cpp" />
     <ClCompile Include="src\skinning_technique.cpp" />
-    <ClCompile Include="src\StaticMesh.cpp" />
-    <ClCompile Include="src\StaticModel.cpp" />
-    <ClCompile Include="src\StaticTechnique.cpp" />
     <ClCompile Include="src\texture.cpp" />
     <ClCompile Include="src\util.cpp" />
     <ClCompile Include="src\world_transform.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
     <ClCompile Include="src\technique.cpp" />
-    <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="Lib\assimp-vc143-mt.lib" />

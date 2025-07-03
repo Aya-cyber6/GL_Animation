@@ -3,6 +3,7 @@
 #include "ogldev_skinned_mesh.h"
 
 #include "3rdparty/meshoptimizer/src/meshoptimizer.h"
+#include <iostream>
 
 using namespace std;
 
@@ -601,10 +602,10 @@ void SkinnedMesh::CalcLocalTransform(LocalTransform& Transform, float AnimationT
 
 void SkinnedMesh::GetBoneTransforms(float TimeInSeconds, vector<Matrix4f>& Transforms, unsigned int AnimationIndex)
 {
-    //if (AnimationIndex >= m_pScene->mNumAnimations) {
-    //    printf("Invalid animation index %d, max is %d\n", AnimationIndex, m_pScene->mNumAnimations);
-    //    assert(0);
-    //}
+    if (AnimationIndex >= m_pScene->mNumAnimations) {
+        printf("Invalid animation index %d, max is %d\n", AnimationIndex, m_pScene->mNumAnimations);
+        assert(0);
+    }
 
     Matrix4f Identity;
     Identity.InitIdentity();
@@ -685,4 +686,14 @@ const aiNodeAnim* SkinnedMesh::FindNodeAnim(const aiAnimation&
     }
 
     return NULL;
+}
+Vector3f SkinnedMesh::GetForwardDirection() const {
+    Matrix4f worldMatrix = m_worldTransform.GetMatrix();
+    // Extract and negate the Z-axis (forward) vector
+    Vector3f forward(
+        -worldMatrix.m[0][2],
+        -worldMatrix.m[1][2],
+        -worldMatrix.m[2][2]
+    );
+    return forward.Normalize();
 }

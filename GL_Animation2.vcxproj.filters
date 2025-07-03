@@ -1332,13 +1332,7 @@
     <ClInclude Include="include\glm\vector_relational.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\basic_glfw_camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\ogldev_basic_lighting.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ogldev_callbacks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\ogldev_material.h">
@@ -1392,16 +1386,7 @@
     <ClInclude Include="include\ogldev_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\BaseCamera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\StaticTechnique.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\ogldev_basic_mesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\StaticModel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\StaticMesh.h">
@@ -1410,10 +1395,10 @@
     <ClInclude Include="include\shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\helper.h">
+    <ClInclude Include="include\CameraX.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\CameraX.h">
+    <ClInclude Include="include\ogldev_callbacks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1999,15 +1984,13 @@
     <None Include="Shaders\shadow_map.vs" />
     <None Include="Shaders\lighting_new.fs" />
     <None Include="Shaders\lighting_new.vs" />
+    <None Include=".gitignore" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\glm\detail\glm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\math_3d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\glfw_camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\basic_mesh.cpp">
@@ -2023,9 +2006,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\shadow_map_fbo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\shadow_mapping_technique.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\skinned_mesh.cpp">
@@ -2052,31 +2032,13 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\maino.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\StaticTechnique.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\StaticMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\StaticModel.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="include\FpsCamera.h">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Fps_Camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="include\BaseCamera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\CameraX.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shadow_mapping_technique.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

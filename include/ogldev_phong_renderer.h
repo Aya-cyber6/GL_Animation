@@ -23,7 +23,7 @@ class PhongRenderer {
 
     void StartShadowPass();
 
-    void SetCamera(const CameraX* pCamera) { m_pCamera = pCamera; }
+    void SetCamera(const CameraX*  pCamera) { m_pCamera = pCamera; }
 
     void SetPBR(bool IsPBR);
 
@@ -87,7 +87,6 @@ class PhongRenderer {
     void RefreshLightingPosAndDirs(BasicMesh* pMesh);
 
     void RenderAnimationCommon(SkinnedMesh* pMesh);
-
     const CameraX* m_pCamera = NULL;
     int m_subTech = LightingTechnique::SUBTECH_DEFAULT;
     LightingTechnique m_lightingTech;

@@ -4,11 +4,11 @@
 #include <GLFW/glfw3.h>
 
 
-CameraX::CameraX(Vector3f position, Vector3f up, float yaw, float pitch, int WindowWidth, int WindowHeight)
+CameraX::CameraX(Vector3f position, Vector3f target, float yaw, float pitch, int WindowWidth, int WindowHeight)
     : Front(Vector3f(0.0f, 0.0f, -1.0f)),
     MouseSensitivity(SENSITIVITY),
     m_pos(position),
-    WorldUp(up),
+    m_target(m_target),
     Yaw(yaw),
     Pitch(pitch),
     m_windowWidth(WindowWidth),
@@ -17,45 +17,11 @@ CameraX::CameraX(Vector3f position, Vector3f up, float yaw, float pitch, int Win
     Update();
 }
 
-
-
-//// constructor with vectors
-//CameraX::CameraX(Vector3f position = Vector3f(0.0f, 0.0f, 0.0f), Vector3f up = Vector3f(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(Vector3f(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
-//{
-//    m_pos = position;
-//    WorldUp = up;
-//    Yaw = yaw;
-//    Pitch = pitch;
-//    updateCameraVectors();
-//}
-//
-//CameraX::CameraX(int WindowWidth, int WindowHeight)
-//{
-//    m_windowWidth = WindowWidth;
-//    m_windowHeight = WindowHeight;
-//    m_pos = Vector3f(0.0f, 20.0f, 80.0f);
-//    m_target = Vector3f(0.0f, 0.0f, 1.0f);
-//    m_up = Vector3f(0.0f, 1.0f, 0.0f);
-//    WorldUp = Vector3f(0.0f, 1.0f, 0.0f);
-//    Yaw = yaw;
-//    Pitch = pitch;
-//    //m_mousePos.x = m_windowWidth / 2;
-//    //m_mousePos.y = m_windowHeight / 2;
-//    //InitInternal();
-//}
-
 Matrix4f CameraX::GetMatrix() const {
     Matrix4f view;
     view.InitCameraTransform(m_pos, m_target, m_up);
-
-    std::cout << "Camera Pos: (" << m_pos.x << ", " << m_pos.y << ", " << m_pos.z << ")  | Looking at: ("
-        << m_target.x << ", " << m_target.y << ", " << m_target.z << ")\n";
-
     return view;
-    //return LookAt(m_pos, m_pos + Front, WorldUp);
-
 }
-
 
 Matrix4f CameraX::GetProjectionMat(float aspectRatio) const {
     PersProjInfo proj;
@@ -78,27 +44,37 @@ void CameraX::SetFirstPerson(const Vector3f& characterPos, const Vector3f& chara
 
 void CameraX::SetFreeFly(const Vector3f& pos, const Vector3f& front) {
     m_pos = pos;
-    m_target = pos + front;
+    m_target = front;
     m_up = Vector3f(0.0f, 1.0f, 0.0f);
 }
 
-void CameraX::SetCinematic(float time) {
-    float radius = 10.0f;
-    m_pos = Vector3f(std::cosf(time) * radius, 5.0f, std::sinf(time) * radius);
-    m_target = Vector3f(0.0f, 0.0f, 0.0f);
-    m_up = Vector3f(0.0f, 1.0f, 0.0f);
+void CameraX::SetCinematic(float time, const Vector3f& characterPos, const Vector3f& characterForward) {
+    // Normalize the direction the character is facing
+    Vector3f forward = characterForward;
+    if (forward.Length() < 0.001f) {
+        forward = Vector3f(0.0f, 0.0f, -1.0f);  // fallback
+    }
+    else {
+        forward.Normalize();
+    }
+
+    // Compute a left vector from the forward direction
+    Vector3f up(0.0f, 1.0f, 0.0f);
+    Vector3f left = up.Cross(forward).Normalize(); // left = up × forward
+
+    // Offset camera: back-left and up
+    float backOffset = 5.0f;
+    float leftOffset = 20.0f;
+    float height = 4.0f;
+
+    m_pos = characterPos - forward * backOffset + left * leftOffset + Vector3f(0.0f, height, 0.0f);
+    m_target = characterPos + m_pos * -1.0f;  // look at character's head height
+    m_up = up;
 }
 
 
 Matrix4f CameraX::GetViewportMatrix() const
 {
-    //float HalfW = m_windowWidth / 2.0f;
-    //float HalfH = m_windowHeight / 2.0f;
-
-    //Matrix4f Viewport = Matrix4f(HalfW, 0.0f, 0.0f, HalfW,
-    //    0.0f, HalfH, 0.0f, HalfH,
-    //    0.0f, 0.0f, 1.0f, 0.0f,
-    //    0.0f, 0.0f, 0.0f, 1.0f);
     Matrix4f View = GetMatrix();
     Matrix4f Projection = GetProjectionMat();
     Matrix4f ViewProj = Projection * View;
@@ -213,34 +189,6 @@ void CameraX::SetMousePos(int x, int y) {
     m_mousePos.y = y;
 }
 
-
-//void CameraX::Update()
-//{
-//    // Clamp vertical angle (in degrees)
-//    if (m_AngleV > 89.0f) m_AngleV = 89.0f;
-//    if (m_AngleV < -89.0f) m_AngleV = -89.0f;
-//
-//    // Convert angles from degrees to radians if necessary
-//    float angleHRad = glm::radians(m_AngleH);
-//    float angleVRad = glm::radians(m_AngleV);
-//
-//    // Calculate the new direction vector
-//    Vector3f direction;
-//    direction.x = cos(angleVRad) * cos(angleHRad);
-//    direction.y = sin(angleVRad);
-//    direction.z = cos(angleVRad) * sin(angleHRad);
-//    direction.Normalize();
-//
-//    m_target = direction;
-//
-//    // Calculate right and up vectors
-//    Vector3f right = m_target.Cross(WorldUp);
-//    right.Normalize();
-//
-//    m_up = right.Cross(m_target);
-//    m_up.Normalize();
-//}
-
 void CameraX::Update()
 {
     Vector3f direction;
@@ -260,79 +208,4 @@ void CameraX::Update()
 
     m_up = m_target.Cross(right);
     m_up.Normalize();
-}
-
-
-// processes input received from a mouse input system. Expects the offset value in both the x and y direction.
-void CameraX::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
-{
-    xoffset *= MouseSensitivity;
-    yoffset *= MouseSensitivity;
-
-    Yaw += xoffset;
-    Pitch += yoffset;
-
-    // make sure that when pitch is out of bounds, screen doesn't get flipped
-    if (constrainPitch)
-    {
-        if (Pitch > 89.0f)
-            Pitch = 89.0f;
-        if (Pitch < -89.0f)
-            Pitch = -89.0f;
-    }
-
-    // update Front, Right and Up Vectors using the updated Euler angles
-    updateCameraVectors();
-}
-
-void CameraX::updateCameraVectors()
-{
-    // Convert yaw and pitch from degrees to radians
-    float yawRad = ToRadian(Yaw);
-    float pitchRad = ToRadian(Pitch);
-
-
-    // New front vector
-    Vector3f front;
-    front.x = cosf(yawRad) * cosf(pitchRad);
-    front.y = sinf(pitchRad);
-    front.z = sinf(yawRad) * cosf(pitchRad);
-    Front = front.Normalize();
-
-    // Recalculate right and up
-    Right = Front.Cross(WorldUp).Normalize();
-    m_up = Right.Cross(Front).Normalize();
-}
-
-
-Matrix4f CameraX::LookAt(const Vector3f& eye, const Vector3f& center, const Vector3f& up) const
-{
-    Vector3f f = (center - eye).Normalize(); // Forward
-    Vector3f r = f.Cross(up).Normalize();    // Right
-    Vector3f u = r.Cross(f);                 // Recomputed Up
-
-    Matrix4f result;
-    result.InitIdentity();
-
-    result.m[0][0] = r.x;
-    result.m[0][1] = r.y;
-    result.m[0][2] = r.z;
-    result.m[0][3] = -r.Dot(eye);
-
-    result.m[1][0] = u.x;
-    result.m[1][1] = u.y;
-    result.m[1][2] = u.z;
-    result.m[1][3] = -u.Dot(eye);
-
-    result.m[2][0] = -f.x;
-    result.m[2][1] = -f.y;
-    result.m[2][2] = -f.z;
-    result.m[2][3] = f.Dot(eye); // Usually -f.Dot(eye), adjust if needed
-
-    result.m[3][0] = 0.0f;
-    result.m[3][1] = 0.0f;
-    result.m[3][2] = 0.0f;
-    result.m[3][3] = 1.0f;
-
-    return result;
 }

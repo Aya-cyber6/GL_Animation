@@ -1,0 +1,13 @@
+# Blender 4.2.4 LTS MTL File: 'terrainpaint_sample.blend'
+# www.blender.org
+
+newmtl terrrain_bake
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd bake_diffuse.jpg
+map_Ns bake_roughness.jpg
+map_Bump -bm 1.000000 bake_normal.jpg
